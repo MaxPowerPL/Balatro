@@ -1,0 +1,23 @@
+# 1. Wirtualne środowisko (To najważniejsze!)
+# To jest ten folder z tysiącem plików, który masz na screenie.
+venv/
+env/
+.venv/
+
+# 2. Śmieci Pythona (skompilowane pliki)
+# Python tworzy je automatycznie, nie potrzebujesz ich na GitHubie.
+__pycache__/
+*.pyc
+
+# 3. Pliki budowania (gdy już użyjesz PyInstallera)
+# To będą foldery z Twoim plikiem .exe
+dist/
+build/
+*.spec
+
+# 4. Ustawienia edytora (VS Code)
+.vscode/
+
+# 5. Systemowe pliki śmieciowe
+.DS_Store
+Thumbs.db
