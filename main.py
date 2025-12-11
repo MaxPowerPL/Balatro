@@ -1,66 +1,156 @@
 import pyglet
-from pyglet import shapes
+from pyglet.window import key
+import sys
 
-window = pyglet.window.Window(width=1280, height=720, caption="Balatro", resizable=True)
+# IMPORTY MODUŁÓW
+import consts
+from background import ShaderBackground
+from card import Card
+from menu import MainMenu
 
-main_batch = pyglet.graphics.Batch()
+# 1. KONFIGURACJA OKNA
+window = pyglet.window.Window(caption="Balatro Clone", resizable=True, fullscreen=True, vsync=True)
 
-cards = []
+# --- BATCHE (Grupy rysowania) ---
+# Rozdzielamy menu i grę, żeby się nie mieszały
+menu_batch = pyglet.graphics.Batch()
+game_batch = pyglet.graphics.Batch()
 
-for i in range(5):
-    card = shapes.Rectangle(
-        x = 100 + (i * 150),
-        y = 300,
-        width = 100,
-        height = 140,
-        color = (200, 50, 50),
-        batch = main_batch
-    )
+# Grupy dla gry
+cards_group = pyglet.graphics.Group(order=1)
+ui_group = pyglet.graphics.Group(order=2)
 
-    card.dy = 0
-    cards.append(card)
+# 2. STAN GRY
+current_state = consts.STATE_MENU
 
-label = pyglet.text.Label(
-    'Kliknij myszką, aby podbić karty!',
-    font_name = 'Arial',
-    font_size = 24,
-    x = window.width // 2,
-    y = window.height - 50,
-    anchor_x = 'center',
-    anchor_y = 'center',
-    batch = main_batch
+# 3. FUNKCJE PRZEŁĄCZAJĄCE STANY
+def start_game():
+    global current_state
+    print("Przycisk GRAJ kliknięty -> Przełączam na grę")
+    current_state = consts.STATE_GAME
+    # Tutaj można zresetować rozdanie kart
+    recalculate_game_layout()
+
+def exit_game():
+    print("Zamykanie gry...")
+    pyglet.app.exit()
+
+# 4. INICJALIZACJA OBIEKTÓW
+# Tło jest wspólne dla obu stanów
+background = ShaderBackground(window.width, window.height)
+
+# MENU
+main_menu = MainMenu(window.width, window.height, menu_batch, start_game, exit_game)
+
+# GRA (Karty)
+my_hand = []
+hand_data = ['pik_as', 'kier_krol', 'trefl_10', 'karo_2', 'BACK']
+
+for card_name in hand_data:
+    new_card = Card(card_name, 0, 0, game_batch, cards_group)
+    my_hand.append(new_card)
+
+# UI Gry (Przycisk powrotu do menu pod ESC)
+game_label = pyglet.text.Label(
+    'Kliknij kartę | ESC - powrót do menu', font_name='Arial', font_size=24,
+    x=window.width//2, y=window.height - 50,
+    anchor_x='center', anchor_y='center',
+    batch=game_batch, group=ui_group
 )
 
+# 5. LOGIKA UKŁADU (LAYOUT) - Tylko dla gry
+def recalculate_game_layout(dt=None):
+    if current_state != consts.STATE_GAME: return
+
+    screen_w = window.width
+    screen_h = window.height
+
+    for card in my_hand:
+        card.update_scale(screen_w, screen_h)
+
+    current_card_width = my_hand[0].sprite.width
+    spacing = current_card_width * 1.1
+    total_width = (len(my_hand) * spacing)
+
+    start_x = (screen_w / 2) - (total_width / 2) + (spacing / 2)
+    base_y = screen_h * 0.3
+
+    for i, card in enumerate(my_hand):
+        target_x = start_x + (i * spacing)
+        card.set_position(target_x, base_y)
+        if card.is_selected:
+            card.target_y = base_y + 50
+        else:
+            card.target_y = base_y
+
+    game_label.x = screen_w // 2
+    game_label.y = screen_h - 50
+
+pyglet.clock.schedule_once(recalculate_game_layout, 0.1)
+
+# 6. PĘTLA GRY (UPDATE)
 def update(dt):
-    for card in cards:
-        card.y += card.dy * dt * 60
+    # Tło działa zawsze (w menu i w grze)
+    background.update(dt, window.width, window.height)
 
-        card.dy -= 0.5
-
-        if card.y < 300:
-            card.y = 300
-            card.dy = 0
-
-        if card.y > 450:
-            card.y = 450
-            card.dy = -3
+    if current_state == consts.STATE_GAME:
+        for card in my_hand:
+            card.update(dt)
 
 pyglet.clock.schedule_interval(update, 1/60.0)
+
+# 7. ZDARZENIA (EVENTS)
+@window.event
+def on_resize(width, height):
+    if current_state == consts.STATE_GAME:
+        recalculate_game_layout()
+    # Tu można dodać odświeżanie pozycji przycisków menu przy zmianie okna
+    super(pyglet.window.Window, window).on_resize(width, height)
 
 @window.event
 def on_draw():
     window.clear()
-    main_batch.draw()
+
+    # 1. Rysujemy tło (jest pod wszystkim)
+    background.draw()
+
+    # 2. Rysujemy odpowiedni Batch w zależności od stanu
+    if current_state == consts.STATE_MENU:
+        menu_batch.draw()
+    elif current_state == consts.STATE_GAME:
+        game_batch.draw()
+
+@window.event
+def on_mouse_motion(x, y, dx, dy):
+    if current_state == consts.STATE_MENU:
+        main_menu.on_mouse_motion(x, y, dx, dy)
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    for card in cards:
-        check_x = card.x < x < card.x + card.width
-        check_y = card.y < y < card.y + card.height
+    if current_state == consts.STATE_MENU:
+        main_menu.on_mouse_press(x, y, button, modifiers)
 
-        if check_x and check_y:
-            card.dy = 15
-            print("Trafiony!")
+    elif current_state == consts.STATE_GAME:
+        for card in reversed(my_hand):
+            if card.check_click(x, y):
+                card.is_selected = not card.is_selected
+                if card.is_selected:
+                    card.target_y += 50
+                else:
+                    card.target_y -= 50
+                break
+
+@window.event
+def on_key_press(symbol, modifiers):
+    global current_state
+
+    if symbol == key.ESCAPE:
+        if current_state == consts.STATE_GAME:
+            # Powrót do menu
+            current_state = consts.STATE_MENU
+        else:
+            # Wyjście z gry (jeśli jesteśmy w menu)
+            window.close()
 
 if __name__ == "__main__":
     pyglet.app.run()
