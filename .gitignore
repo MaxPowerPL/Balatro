@@ -21,3 +21,5 @@ build/
 # 5. Systemowe pliki śmieciowe
 .DS_Store
 Thumbs.db
+
+*.json

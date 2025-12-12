@@ -13,14 +13,11 @@ class Button:
         self.color = color
         self.visible = True
 
-        # Główne tło
         self.rect = shapes.Rectangle(x, y, width, height, color=color, batch=batch, group=group)
 
-        # Cień
         darker = (int(color[0]*0.7), int(color[1]*0.7), int(color[2]*0.7))
-        self.shadow = shapes.Rectangle(x, y - 5, width, 5, color=darker, batch=batch, group=group)
+        self.shadow = shapes.Rectangle(x, y - 4, width, 4, color=darker, batch=batch, group=group)
 
-        # Tekst
         self.label = pyglet.text.Label(
             label_text, font_name='Arial', font_size=font_size,
             x=x + width // 2, y=y + height // 2,
@@ -31,19 +28,22 @@ class Button:
         self.label.bold = True
         self.is_hovered = False
 
-        # Zbieramy wszystkie komponenty graficzne
         self.sprites = [self.rect, self.shadow, self.label]
+
+    def delete(self):
+        """Usuwa elementy graficzne z batcha."""
+        for s in self.sprites:
+            s.delete()
 
     def set_visible(self, is_visible):
         self.visible = is_visible
-        # Ustawiamy przezroczystość na 0 jeśli niewidoczne (prosty hack w Pyglet)
+        # Metoda Hard: Wyłączamy renderowanie kształtów
+        self.rect.visible = is_visible
+        self.shadow.visible = is_visible
+
+        # Tekst nie ma właściwości .visible w starszych wersjach, więc tu zostawiamy opacity hack
         opacity = 255 if is_visible else 0
-        self.rect.opacity = opacity
-        self.shadow.opacity = opacity
-        # Etykieta tekstowa wymaga innego podejścia do koloru
-        current_color = list(self.label.color)
-        current_color[3] = opacity # Kanał Alpha
-        self.label.color = tuple(current_color)
+        c = list(self.label.color); c[3] = opacity; self.label.color = tuple(c)
 
     def set_color(self, color):
         self.color = color
@@ -52,8 +52,7 @@ class Button:
         self.shadow.color = darker
 
     def set_text_color(self, color_rgb):
-        # Dodajemy kanał alpha (255)
-        self.label.color = (color_rgb[0], color_rgb[1], color_rgb[2], 255)
+        self.label.color = (*color_rgb, 255)
 
     def check_hover(self, mx, my):
         if not self.visible: return False
@@ -62,16 +61,16 @@ class Button:
 
         if in_x and in_y and not self.is_hovered:
             self.is_hovered = True
-            self.rect.y = self.base_y + 5
-            self.label.y = (self.base_y + 5) + self.height // 2
-            self.shadow.height = 10
-            self.shadow.y = self.base_y - 5
+            self.rect.y = self.base_y + 3
+            self.label.y = (self.base_y + 3) + self.height // 2
+            self.shadow.height = 7
+            self.shadow.y = self.base_y - 3
         elif not (in_x and in_y) and self.is_hovered:
             self.is_hovered = False
             self.rect.y = self.base_y
             self.label.y = self.base_y + self.height // 2
-            self.shadow.height = 5
-            self.shadow.y = self.base_y - 5
+            self.shadow.height = 4
+            self.shadow.y = self.base_y - 4
         return self.is_hovered
 
     def check_click(self, mx, my):
@@ -93,26 +92,21 @@ class Slider:
         self.dragging = False
         self.visible = True
 
-        # Etykieta nad suwakiem
         self.label = pyglet.text.Label(
-            label_text, font_name='Arial', font_size=14,
-            x=x + width // 2, y=y + height + 10,
+            label_text, font_name='Arial', font_size=16,
+            x=x + width // 2, y=y + height + 15,
             anchor_x='center', color=(*consts.BTN_COLOR_TEXT, 255),
             batch=batch, group=group
         )
         self.label.bold = True
 
-        # Tło paska
         self.bg_rect = shapes.Rectangle(x, y, width, height, color=consts.UI_SLIDER_BG, batch=batch, group=group)
-
-        # Pasek wypełnienia
         self.fill_width = self._calc_fill_width()
         self.fill_rect = shapes.Rectangle(x, y, self.fill_width, height, color=consts.UI_SLIDER_FILL, batch=batch, group=group)
 
-        # Tekst wartości
         self.val_label = pyglet.text.Label(
-            str(int(self.value)), font_name='Arial', font_size=14,
-            x=x + width + 15, y=y + height // 2,
+            f"{int(self.value)}", font_name='Arial', font_size=16,
+            x=x + width + 20, y=y + height // 2,
             anchor_y='center', color=(*consts.BTN_COLOR_TEXT, 255),
             batch=batch, group=group
         )
@@ -120,17 +114,22 @@ class Slider:
 
         self.sprites = [self.label, self.bg_rect, self.fill_rect, self.val_label]
 
+    def delete(self):
+        """Usuwa elementy graficzne z batcha."""
+        for s in self.sprites:
+            s.delete()
+
     def set_visible(self, is_visible):
         self.visible = is_visible
+
+        # Wyłączamy kształty
+        self.bg_rect.visible = is_visible
+        self.fill_rect.visible = is_visible
+
+        # Ukrywamy tekst przez opacity
         opacity = 255 if is_visible else 0
-        self.bg_rect.opacity = opacity
-        self.fill_rect.opacity = opacity
-
-        c_label = list(self.label.color); c_label[3] = opacity
-        self.label.color = tuple(c_label)
-
-        c_val = list(self.val_label.color); c_val[3] = opacity
-        self.val_label.color = tuple(c_val)
+        c1 = list(self.label.color); c1[3] = opacity; self.label.color = tuple(c1)
+        c2 = list(self.val_label.color); c2[3] = opacity; self.val_label.color = tuple(c2)
 
     def _calc_fill_width(self):
         percent = (self.value - self.min) / (self.max - self.min)
@@ -142,24 +141,21 @@ class Slider:
         percent = rel_x / self.width
         self.value = self.min + percent * (self.max - self.min)
         self.fill_rect.width = int(rel_x)
-        self.val_label.text = str(int(self.value))
-        if self.callback:
-            self.callback(self.value)
+        self.val_label.text = f"{int(self.value)}"
+        if self.callback: self.callback(self.value)
 
     def check_press(self, mx, my):
         if not self.visible: return False
-        if self.x <= mx <= self.x + self.width and self.y <= my <= self.y + self.height:
+        if self.x <= mx <= self.x + self.width and self.y - 5 <= my <= self.y + self.height + 5:
             self.dragging = True
             self.update_val_from_mouse(mx)
             return True
         return False
 
     def check_drag(self, mx, my):
-        if self.visible and self.dragging:
-            self.update_val_from_mouse(mx)
+        if self.visible and self.dragging: self.update_val_from_mouse(mx)
 
-    def check_release(self):
-        self.dragging = False
+    def check_release(self): self.dragging = False
 
 class Checkbox:
     def __init__(self, label_text, is_checked, x, y, size, callback, batch, group):
@@ -171,8 +167,8 @@ class Checkbox:
         self.visible = True
 
         self.label = pyglet.text.Label(
-            label_text, font_name='Arial', font_size=14,
-            x=x + size + 15, y=y + size // 2,
+            label_text, font_name='Arial', font_size=16,
+            x=x + size + 20, y=y + size // 2 + 2,
             anchor_y='center', color=(*consts.BTN_COLOR_TEXT, 255),
             batch=batch, group=group
         )
@@ -184,24 +180,36 @@ class Checkbox:
 
         self.sprites = [self.label, self.rect, self.inner]
 
+    def delete(self):
+        """Usuwa elementy graficzne z batcha."""
+        for s in self.sprites:
+            s.delete()
+
     def set_visible(self, is_visible):
         self.visible = is_visible
-        opacity = 255 if is_visible else 0
-        self.rect.opacity = opacity
-        self.rect.border_opacity = opacity
-        # Inner jest widoczny tylko jeśli checkbox jest visible ORAZ checked
-        self.inner.opacity = opacity if self.is_checked else 0
 
-        c_label = list(self.label.color); c_label[3] = opacity
-        self.label.color = tuple(c_label)
+        # 1. Wyłączamy główną ramkę
+        self.rect.visible = is_visible
+
+        # 2. Wyłączamy środek - ale uwaga, musi pamiętać czy był zaznaczony!
+        if not is_visible:
+            self.inner.visible = False
+        else:
+            # Jeśli włączamy widoczność, środek jest widoczny TYLKO gdy checkbox jest zaznaczony
+            self.inner.visible = self.is_checked
+
+        # 3. Tekst
+        opacity = 255 if is_visible else 0
+        c = list(self.label.color); c[3] = opacity; self.label.color = tuple(c)
 
     def check_click(self, mx, my):
         if not self.visible: return False
         if self.x <= mx <= self.x + self.size and self.y <= my <= self.y + self.size:
             self.is_checked = not self.is_checked
-            # Aktualizujemy widoczność środka
-            self.set_visible(self.visible)
-            if self.callback:
-                self.callback(self.is_checked)
+
+            # Aktualizacja widoczności środka
+            self.inner.visible = self.is_checked
+
+            if self.callback: self.callback(self.is_checked)
             return True
         return False

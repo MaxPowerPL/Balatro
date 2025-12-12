@@ -6,25 +6,30 @@ import consts
 from background import ShaderBackground
 from card import Card
 from menu import MainMenu
-from options import OptionsMenu # Nowy moduł
+from options import OptionsMenu
 
-window = pyglet.window.Window(caption="Balatro Clone", resizable=True, fullscreen=True, vsync=True)
+window = pyglet.window.Window(
+    caption="Blind Bet",
+    resizable=True,
+    fullscreen=consts.settings.fullscreen,
+    vsync=True
+)
 
 # Batche
 menu_batch = pyglet.graphics.Batch()
 game_batch = pyglet.graphics.Batch()
-options_batch = pyglet.graphics.Batch() # Oddzielny batch dla opcji
+options_batch = pyglet.graphics.Batch()
 
 cards_group = pyglet.graphics.Group(order=1)
 ui_group = pyglet.graphics.Group(order=2)
 
 current_state = consts.STATE_MENU
-is_options_open = False # Flaga: Czy popup jest otwarty?
+is_options_open = False
 
 # --- FUNKCJE STERUJĄCE ---
 def start_game():
     global current_state
-    if is_options_open: return # Blokada klikania gdy opcje otwarte
+    if is_options_open: return
     current_state = consts.STATE_GAME
     recalculate_game_layout()
 
@@ -33,6 +38,8 @@ def open_options():
     print("Otwieram opcje...")
     is_options_open = True
     options_menu.visible = True
+    # Wymuszamy przeliczenie pozycji przy otwarciu (dla pewności)
+    options_menu.update_layout()
 
 def close_options():
     global is_options_open
@@ -47,13 +54,9 @@ def exit_game():
 # --- INICJALIZACJA ---
 background = ShaderBackground(window.width, window.height)
 
-# Przekazujemy funkcję open_options do menu głównego
 main_menu = MainMenu(window.width, window.height, menu_batch, start_game, open_options, exit_game)
-
-# Inicjalizacja Menu Opcji
 options_menu = OptionsMenu(window, options_batch, close_options)
 
-# Karty i Gra
 my_hand = []
 hand_data = ['pik_as', 'kier_krol', 'trefl_10', 'karo_2', 'BACK']
 for card_name in hand_data:
@@ -95,6 +98,21 @@ pyglet.clock.schedule_interval(update, 1/60.0)
 
 # --- ZDARZENIA ---
 @window.event
+def on_resize(width, height):
+    # 1. Odświeżamy układ menu głównego
+    if current_state == consts.STATE_MENU:
+        main_menu.update_layout(width, height)
+
+    # 2. Odświeżamy układ gry
+    elif current_state == consts.STATE_GAME:
+        recalculate_game_layout()
+
+    # 3. Odświeżamy opcje (ważne!)
+    options_menu.update_layout()
+
+    super(pyglet.window.Window, window).on_resize(width, height)
+
+@window.event
 def on_draw():
     window.clear()
     background.draw()
@@ -104,18 +122,15 @@ def on_draw():
     elif current_state == consts.STATE_GAME:
         game_batch.draw()
 
-    # Opcje rysujemy ZAWSZE na wierzchu, jeśli są otwarte
     if is_options_open:
         options_batch.draw()
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-    # 1. Priorytet: Opcje
     if is_options_open:
         options_menu.on_mouse_press(x, y, button, modifiers)
-        return # Blokujemy kliknięcia pod spodem!
+        return
 
-    # 2. Reszta gry
     if current_state == consts.STATE_MENU:
         main_menu.on_mouse_press(x, y, button, modifiers)
     elif current_state == consts.STATE_GAME:
@@ -139,7 +154,7 @@ def on_mouse_release(x, y, button, modifiers):
 def on_mouse_motion(x, y, dx, dy):
     if is_options_open:
         options_menu.on_mouse_motion(x, y, dx, dy)
-        return # Nie podświetlaj przycisków menu pod spodem
+        return
 
     if current_state == consts.STATE_MENU:
         main_menu.on_mouse_motion(x, y, dx, dy)
@@ -149,12 +164,27 @@ def on_key_press(symbol, modifiers):
     global current_state, is_options_open
 
     if symbol == key.ESCAPE:
+        # 1. Jeśli opcje są otwarte -> Zamknij opcje i ZATRZYMAJ SIĘ
         if is_options_open:
             close_options()
-        elif current_state == consts.STATE_GAME:
+            return pyglet.event.EVENT_HANDLED
+
+        # 2. Jeśli jesteśmy w GRZE -> Wróć do MENU
+        if current_state == consts.STATE_GAME:
+            print("ESC: Powrót do menu")
             current_state = consts.STATE_MENU
-        else:
+
+            # WAŻNE: Odświeżamy układ menu, żeby przyciski były na środku
+            # (szczególnie jeśli w trakcie gry zmieniłeś tryb fullscreen)
+            main_menu.update_layout(window.width, window.height)
+
+            return pyglet.event.EVENT_HANDLED
+
+        # 3. Jeśli jesteśmy w MENU -> Zamknij aplikację
+        if current_state == consts.STATE_MENU:
+            print("ESC: Wyjście z gry")
             window.close()
+            return pyglet.event.EVENT_HANDLED
 
 if __name__ == "__main__":
     pyglet.app.run()

@@ -3,7 +3,7 @@ import pyglet
 # --- ŁADOWANIE ZASOBÓW ---
 # Wykonuje się raz przy starcie importu
 
-cards_image = pyglet.image.load('cards_sheet.png')
+cards_image = pyglet.image.load('assets/cards_sheet.png')
 texture = cards_image.get_texture()
 
 # Fix ostrości (Pixel Art) - Metoda Nuklearna
