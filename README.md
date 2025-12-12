@@ -267,8 +267,8 @@ Ten projekt jest udostępniony na licencji **MIT License**. Zobacz plik [LICENSE
 <sub>Ten projekt jest fanowską wersją edukacyjną i nie jest powiązany z LocalThunk ani Playstack.</sub>
 
 <p>
-  <a href="https://github.com/MaxPowerPL/Blind-Bet/issues">🐛 Zgłoś Bug</a> •
-  <a href="https://github.com/MaxPowerPL/Blind-Bet/issues">💡 Zaproponuj Funkcję</a> •
+  <a href="https://github.com/MaxPowerPL/Blind-Bet/issues/new?template=bug_report.yml">🐛 Zgłoś Bug</a> •
+  <a href="https://github.com/MaxPowerPL/Blind-Bet/issues/new?template=feature_request.yml">💡 Zaproponuj Funkcję</a> •
   <a href="https://github.com/MaxPowerPL/Blind-Bet/wiki">📖 Wiki</a>
 </p>
 
