@@ -28,12 +28,11 @@
     <a href="#-funkcjonalności">✨ Funkcjonalności</a> •
     <a href="#-instalacja-i-uruchomienie">🚀 Instalacja</a> •
     <a href="#-struktura-projektu">📂 Struktura</a> •
+    <a href="#-roadmapa">🗺️ Roadmapa</a> •
   </p>
 </div>
 
 ---
-
-[Roadmapa](#roadmapa)
 
 ## 🃏 O Projekcie
 
