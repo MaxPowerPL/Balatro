@@ -1,0 +1,97 @@
+name: "🐛 Zgłoś bug"
+description: "Zgłoś błąd w Blind Bet Python Edition"
+title: "[BUG] Krótkie podsumowanie problemu"
+labels:
+  - bug
+  - needs-triage
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dzięki za zgłoszenie błędu w Blind Bet Python Edition! Postaraj się wypełnić pola jak najdokładniej.
+
+  - type: input
+    id: version
+    attributes:
+      label: Wersja gry
+      description: Wpisz wersję gry z ekranu głównego (np. v0.3.0 Alpha).
+      placeholder: v0.3.0 Alpha
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: System operacyjny
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Inny
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Opis błędu
+      description: Co dokładnie nie działa? Co się stało, czego się spodziewałeś/spodziewałaś?
+      placeholder: Opisz problem własnymi słowami.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Kroki do odtworzenia
+      description: Wypisz po kolei czynności, które prowadzą do błędu.
+      placeholder: |
+        1. Uruchom grę
+        2. Wejdź do ...
+        3. Kliknij ...
+        4. Zobacz błąd
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Oczekiwane zachowanie
+      description: Co miało się stać zamiast błędu?
+      placeholder: Opisz poprawne, oczekiwane zachowanie.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logi / traceback
+      description: Jeśli masz logi z konsoli lub traceback Pythona, wklej je tutaj jako kod.
+      render: shell
+      placeholder: |
+        Traceback (most recent call last):
+          File "main.py", line ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Zrzuty ekranu
+      description: Jeśli to możliwe, dodaj zrzuty ekranu lub krótkie nagranie.
+      placeholder: Przeciągnij i upuść pliki tutaj.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Priorytet / wpływ błędu
+      options:
+        - Krytyczny (crash, nie da się grać)
+        - Wysoki (mocno utrudnia grę)
+        - Średni
+        - Niski (kosmetyka, UI, literówki)
+    validations:
+      required: true
