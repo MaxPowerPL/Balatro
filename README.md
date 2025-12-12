@@ -272,6 +272,6 @@ Ten projekt jest udostępniony na licencji **MIT License**. Zobacz plik [LICENSE
   <a href="https://github.com/MaxPowerPL/Blind-Bet/wiki">📖 Wiki</a>
 </p>
 
-**Status Projektu:** 🟢 Aktywnie Rozwijany
+![Status](https://img.shields.io/badge/Status-Aktywnie%20Rozwijany-brightgreen?style=for-the-badge&logo=statuspage&logoColor=white)
 
 </div>
