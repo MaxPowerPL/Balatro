@@ -28,7 +28,7 @@
     <a href="#-funkcjonalności">✨ Funkcjonalności</a> •
     <a href="#-instalacja-i-uruchomienie">🚀 Instalacja</a> •
     <a href="#-struktura-projektu">📂 Struktura</a> •
-    <a href="#-roadmapa">🗺️ Roadmapa</a>
+    <a href="#%EF%B8%8F-roadmapa">🗺️ Roadmapa</a>
   </p>
 </div>
 
@@ -195,7 +195,7 @@ Gra wykorzystuje **OpenGL Shading Language (GLSL 330)** do generowania dynamiczn
 
 ---
 
-## Roadmapa
+## 🗺️ Roadmapa
 Plany rozwoju projektu na najbliższe miesiące:
 
 ### Faza 1: Core Mechanics (Ukończona ✅)
