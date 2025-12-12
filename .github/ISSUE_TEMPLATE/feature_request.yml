@@ -1,0 +1,63 @@
+name: "💡 Zaproponuj funkcję"
+description: "Zaproponuj nową funkcję lub usprawnienie dla Blind Bet Python Edition"
+title: "[FEATURE] Krótkie podsumowanie pomysłu"
+labels:
+  - enhancement
+  - needs-triage
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dzięki za pomysł na rozwój Blind Bet Python Edition! Wypełnij pola, aby łatwiej było ocenić i zaplanować funkcję.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Jaki problem ma rozwiązać ta funkcja?
+      description: Opisz sytuację z perspektywy gracza. Co jest teraz niewygodne lub czego brakuje?
+      placeholder: Jako gracz chciałbym/chciałabym...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Opis proponowanego rozwiązania
+      description: Jak wyobrażasz sobie tę funkcję w grze? Jak miałaby działać?
+      placeholder: Opisz funkcję możliwie konkretnie.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Rozważane alternatywy
+      description: Czy masz inne pomysły, jak można by rozwiązać ten problem?
+      placeholder: Wymień inne możliwe rozwiązania, jeśli jakieś masz.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Obszar gry
+      description: Czego dotyczy pomysł?
+      options:
+        - UI / UX
+        - Rozgrywka (mechaniki kart, jokery, blindy)
+        - Audio / muzyka
+        - Grafika / shadery
+        - Techniczne (wydajność, ustawienia)
+        - Inne
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Dodatkowe informacje
+      description: Każde dodatkowe szczegóły, mockupy, linki itp.
+      placeholder: Dodaj tutaj wszystko, co może pomóc zrozumieć pomysł.
+    validations:
+      required: false
