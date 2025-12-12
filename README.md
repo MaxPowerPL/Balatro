@@ -195,7 +195,7 @@ Gra wykorzystuje **OpenGL Shading Language (GLSL 330)** do generowania dynamiczn
 
 ---
 
-## 🗺️ Roadmapa
+## Roadmapa
 Plany rozwoju projektu na najbliższe miesiące:
 
 ### Faza 1: Core Mechanics (Ukończona ✅)
