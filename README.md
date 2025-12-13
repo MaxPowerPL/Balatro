@@ -40,8 +40,8 @@ Ten projekt to **klon gry Balatro** napisany całkowicie w języku **Python**, w
 
 Celem projektu jest nauka architektury gier 2D bez użycia gotowych silników ("Game Engines"), zrozumienie matematyki stojącej za animacjami, shaderami oraz optymalizacją renderowania (Batch Rendering).
 
-### 🎮 Aktualna Wersja: `v0.3.0 (Alpha)`
-Wersja ta wprowadza w pełni funkcjonalne menu opcji z trybami zakładek, system zapisu ustawień do JSON, responsywne skalowanie UI oraz zoptymalizowane shadery tła z dynamiczną pikselizacją sterowaną suwakiem.
+### 🎮 Aktualna Wersja: `v0.4.0 (Alpha)`
+Wersja ta wprowadza **kompletny redesign interfejsu (HUD)** wzorowany na oryginale, pełną pętlę rozgrywki (system rund, wygrana/przegrana), działający system ekonomii ($), statystyki użycia układów oraz poprawioną logikę detekcji pokera.
 
 ---
 
@@ -49,38 +49,28 @@ Wersja ta wprowadza w pełni funkcjonalne menu opcji z trybami zakładek, system
 
 Co już działa w tej wersji?
 
-- [x] **Silnik Renderujący**: Oparty na `pyglet.graphics.Batch` (wysoka wydajność).
+- [x] **Zaawansowany Interfejs Gry (HUD)**:
+  - **Sidebar**: Panel boczny ze statystykami rundy, celem punktowym i licznikiem zasobów.
+  - **Score Pill**: Dynamiczna wizualizacja wyniku (Chips x Mult) w stylu Balatro (Blue/Red).
+  - **Statystyki**: Licznik dostępnych Rąk i Zrzutek.
+  - **Info Popup**: Tabela układów pokerowych z wartościami punktowymi i licznikiem użycia w danej grze.
+- [x] **Pełna Pętla Rozgrywki**:
+  - System rund z rosnącym poziomem trudności (Target Score).
+  - Warunki zwycięstwa (osiągnięcie celu) i przegranej (brak rąk).
+  - System ekonomii (zdobywanie $ za wygrane rundy).
+  - Ekran "Game Over" z możliwością restartu.
+- [x] **Logika Kart i Pokera**:
+  - Poprawna hierarchia układów (Royal Flush > ... > High Card).
+  - Mechanika odrzucania (Discard) i dobierania kart do limitu ręki.
+  - **Sortowanie ręki**: Po randze i po kolorze.
+  - Ograniczenia logiczne (max 5 kart do zagrania/odrzucenia).
 - [x] **Dynamiczne Tło (Shader GLSL)**:
   - Proceduralnie generowany efekt "Liquid Plasma".
-  - **Dynamiczna pikselizacja w czasie rzeczywistym** sterowana suwakiem CRT Intensity.
-  - Płynna zmiana palet kolorów (Ogień → Matrix → Cyberpunk → Void → Toksyczny).
-  - Automatyczne przełączanie palet co 15 sekund z interpolacją.
-- [x] **Fizyka Kart**:
-  - Animacje oparte o interpolację liniową (`Lerp`).
-  - Interakcja z myszką (Hover, Click, Drag).
-  - Skalowanie "Pixel-Perfect" (Integer Scaling).
-  - Pełna obsługa atlasu tekstur kart (52 karty + rewers).
-- [x] **System UI**:
-  - Własne implementacje Przycisków, Suwaków i Checkboxów.
-  - Menu Główne z logo i trzema przyciskami (Graj, Opcje, Wyjdź).
-  - **Zaawansowane Menu Opcji**:
-    - System zakładek (Gra, Wideo, Audio).
-    - Responsywne panele z automatycznym layoutem.
-    - Efekty hover na przyciskach.
+  - Dynamiczna pikselizacja sterowana suwakiem.
+  - Płynna zmiana palet kolorów.
 - [x] **System Ustawień**:
-  - **Zapis i odczyt ustawień do pliku JSON** (`settings.json`).
-  - Opcje Wideo: Pełny ekran, Intensywność efektu CRT.
-  - Opcje Audio: Głośność główna, muzyka, efekty dźwiękowe (zarezerwowane).
-  - Opcje Gry: Pokaż samouczki, szybkość animacji.
-  - Automatyczny zapis przy zamknięciu menu opcji i po puszczeniu suwaków.
-- [x] **Responsywność**:
-  - Automatyczne skalowanie kart i UI do rozdzielczości okna.
-  - Dynamiczne przeliczanie layoutu przy resize okna.
-  - Obsługa przełączania trybu pełnoekranowego w locie.
-- [x] **Zarządzanie Stanami Gry**:
-  - System stanów (Menu → Gra).
-  - ESC w grze wraca do menu, w menu zamyka grę.
-  - Opcje jako overlay (można otworzyć z menu i z gry).
+  - Zapis i odczyt ustawień do pliku JSON.
+  - Pełna konfiguracja wideo, audio i rozgrywki.
 
 ---
 
@@ -136,10 +126,13 @@ python main.py
 ```
 
 ### 6. Sterowanie
-- **Menu**: Kliknij przyciski myszką.
-- **Gra**: Kliknij karty aby je zaznaczyć (podnoszą się).
-- **ESC**: Powrót do menu z gry / Zamknięcie gry z menu / Zamknięcie opcji.
-- **Opcje**: Pełnoekranowy tryb + suwaki intensywności efektów.
+- **Mysz**: Obsługa całego interfejsu (karty, przyciski).
+- **Gra**:
+  - Kliknij karty, aby je zaznaczyć/odznaczyć.
+  - "ZAGRAJ": Zatwierdza wybrany układ.
+  - "ODRZUĆ": Wymienia wybrane karty (tracisz zrzutkę).
+  - "RANGA/KOLOR": Sortuje karty w ręce.
+- **ESC**: Menu pauzy / Powrót / Wyjście.
 
 ---
 
@@ -151,15 +144,15 @@ Profesjonalny podział kodu na moduły:
  ┣ 📦 assets/
  ┃  ┣ 🖼️ cards_sheet.png    # Atlas tekstur kart (5x13 grid, Pixel Art)
  ┃  ┗ 🖼️ logo.png           # Logo gry (Blind Bet)
- ┣ 📜 main.py               # Główna pętla gry, zarządzanie oknem i stanami
- ┣ 📜 consts.py             # Stałe konfiguracyjne, kolory UI, klasa GameSettings
- ┣ 📜 resources.py          # Ładowanie i przetwarzanie grafik (Sprite Sheet)
- ┣ 📜 background.py         # Logika shaderów GLSL i renderowanie tła
- ┣ 📜 card.py               # Klasa Karty (fizyka, animacje, interakcja)
- ┣ 📜 menu.py               # Logika Menu Głównego (logo + przyciski)
- ┣ 📜 options.py            # Logika Menu Opcji (system zakładek, ustawienia)
- ┣ 📜 ui.py                 # Komponenty interfejsu (Button, Slider, Checkbox)
- ┗ 📜 settings.json         # Plik zapisu ustawień gracza (generowany automatycznie)
+ ┣ 📜 main.py               # Główna pętla, GameManager, Sidebar UI Layout
+ ┣ 📜 consts.py             # Stałe, kolory (Balatro style), dane układów
+ ┣ 📜 game_logic.py         # Logika talii i ewaluacja układów pokerowych
+ ┣ 📜 ui.py                 # Komponenty UI: ScorePill, Popups, Buttons
+ ┣ 📜 card.py               # Klasa Karty (fizyka, animacje)
+ ┣ 📜 background.py         # Shadery GLSL
+ ┣ 📜 menu.py               # Menu Główne
+ ┣ 📜 options.py            # Menu Opcji
+ ┗ 📜 resources.py          # Ładowanie zasobów
 ```
 
 ### Opis głównych modułów:
@@ -173,6 +166,8 @@ Profesjonalny podział kodu na moduły:
 | `menu.py` | Klasa `MainMenu` z dynamicznym ładowaniem logo (z fixem anchor point) i trzema przyciskami akcji. |
 | `options.py` | Zaawansowana klasa `OptionsMenu` z systemem zakładek, builderem UI dla każdej sekcji, zarządzaniem widocznością elementów. |
 | `ui.py` | Trzy komponenty: `Button` (z efektem hover i cieniem), `Slider` (z drag & drop), `Checkbox` (z wizualną zmianą stanu). |
+| `resources.py` | Ładowanie i cięcie atlasu tekstur (Sprite Sheet), konfiguracja filtrów tekstur (Pixel Art) oraz mapowanie logicznych nazw kart na obiekty graficzne. |
+| `game_logic.py` | Silnik logiczny gry: klasa `Deck` (tasowanie, rozdawanie) oraz `HandEvaluator` (algorytm rozpoznawania układów pokerowych i obliczania punktacji). |
 
 ---
 
@@ -207,14 +202,14 @@ Plany rozwoju projektu na najbliższe miesiące:
 - [x] Responsywne skalowanie przy resize okna.
 - [x] Fix anchor point dla logo (Pixel-Perfect).
 
-### Faza 2: Logika Pokera (Następny krok 🚧)
-- [ ] Algorytm sprawdzania układów (Para, Trójka, Strit, Kolor, Full, Kareta, Poker).
-- [ ] System punktacji (Chips + Mult).
-- [ ] Mechanika odrzucania i dobierania kart.
-- [ ] Generowanie talii i losowość (shuffle).
+### Faza 2: Logika Pokera (Ukończona ✅)
+- [X] Algorytm sprawdzania układów (Para, Trójka, Strit, Kolor, Full, Kareta, Poker).
+- [X] System punktacji (Chips + Mult).
+- [X] Mechanika odrzucania i dobierania kart.
+- [X] Generowanie talii i losowość (shuffle).
 - [ ] UI wyświetlania znalezionego układu.
 
-### Faza 3: Roguelike Elements
+### Faza 3: Roguelike Elements (Następny krok 🚧)
 - [ ] Implementacja Jokerów (modyfikatory punktów).
 - [ ] Sklep (kupowanie kart i ulepszeń).
 - [ ] System Blindów (Small Blind, Big Blind, Boss Blinds).
@@ -240,10 +235,10 @@ Plany rozwoju projektu na najbliższe miesiące:
 
 ## 🐛 Znane Problemy i Rozwiązania
 
-### ✅ Naprawione w v0.3.0:
-- **Logo było przesunięte w menu**: Naprawiono przez ustawienie `anchor_x/y` bezpośrednio na obiekcie `texture` zamiast na `logo_img`.
-- **Suwaki zapisywały co klatkę**: Zoptymalizowano - zapis następuje tylko przy puszczeniu myszy (`on_mouse_release`).
-- **Checkbox nie pamiętał stanu po ukryciu**: Dodano logikę warunkową w `set_visible()`.
+### ✅ Naprawione w v0.4.0:
+- **Kolejność układów**: Naprawiono błąd, gdzie Kolor (Flush) był wykrywany jako Para/Wysoka karta.
+- **Centrowanie kart**: Karty są teraz poprawnie centrowane na starcie rundy.
+- **UI Glitches**: Poprawiono cienie przycisków i ramki popupów.
 
 ### 🔧 Do poprawy:
 - [ ] Brak obsługi kontrolera/gamepad.
