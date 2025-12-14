@@ -3,13 +3,13 @@ from pyglet import shapes
 from pyglet.window import key
 import sys
 
-import consts
-from background import ShaderBackground
-from card import Card
-from menu import MainMenu
-from options import OptionsMenu
-from ui import Button, ScorePill, HandHierarchyPopup, GameOverOverlay
-from game_logic import Deck, HandEvaluator
+import config.consts as consts
+from ui.background import ShaderBackground
+from core.card import Card
+from ui.menu import MainMenu
+from ui.options import OptionsMenu
+from ui.ui import Button, ScorePill, HandHierarchyPopup, GameOverOverlay
+from core.game_logic import Deck, HandEvaluator
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 window = pyglet.window.Window(caption="Blind Bet", width=WINDOW_WIDTH, height=WINDOW_HEIGHT, resizable=True, fullscreen=consts.settings.fullscreen, vsync=consts.settings.vsync, visible=False)
