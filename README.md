@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="assets/image/logo.png" alt="Blind Bet Logo" width="200" height="auto" />
+  <img src="assets/images/logo.png" alt="Blind Bet Logo" width="200" height="auto" />
 
   # Blind Bet (Python Edition)
 
