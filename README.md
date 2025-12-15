@@ -41,7 +41,7 @@ Ten projekt to **klon gry Balatro** napisany całkowicie w języku **Python**, w
 Celem projektu jest nauka architektury gier 2D bez użycia gotowych silników ("Game Engines"), zrozumienie matematyki stojącej za animacjami, shaderami oraz optymalizacją renderowania (Batch Rendering).
 
 ### 🎮 Aktualna Wersja: `v0.4.0 (Alpha)`
-Wersja ta wprowadza **kompletny redesign interfejsu (HUD)** wzorowany na oryginale, pełną pętlę rozgrywki (system rund, wygrana/przegrana), działający system ekonomii ($), statystyki użycia układów oraz poprawioną logikę detekcji pokera.
+Wersja ta wprowadza **pełną refaktoryzację architektury projektu** według wzorca MVC, separację odpowiedzialności (Stan gry, Logika, UI), kompletny redesign interfejsu (HUD) wzorowany na oryginale, oraz profesjonalną strukturę pakietów Python z wydzielonymi modułami.
 
 ---
 
@@ -49,6 +49,11 @@ Wersja ta wprowadza **kompletny redesign interfejsu (HUD)** wzorowany na orygina
 
 Co już działa w tej wersji?
 
+- [x] **Architektura Projektu (NOWE)**:
+  - **MVC Pattern**: Separacja modelu (GameState), logiki (GameManager) i widoku (UI).
+  - **Modułowa Struktura**: Pakiety `config/`, `core/`, `ui/`, `utils/`.
+  - **Zarządzanie Stanem**: Centralna klasa `GameState` dla całego stanu gry.
+  - **Manager Pattern**: `GameManager` obsługuje mechaniki rozgrywki.
 - [x] **Zaawansowany Interfejs Gry (HUD)**:
   - **Sidebar**: Panel boczny ze statystykami rundy, celem punktowym i licznikiem zasobów.
   - **Score Pill**: Dynamiczna wizualizacja wyniku (Chips x Mult) w stylu Balatro (Blue/Red).
@@ -83,6 +88,7 @@ Projekt został zbudowany przy użyciu:
 | **Python 3.12** | Główny język logiki gry. |
 | **Pyglet 2.0+** | Biblioteka okienkowa i obsługa OpenGL. |
 | **GLSL 330** | Język shaderów (efekty wizualne tła). |
+| **MVC Architecture** | Separacja Model-View-Controller. |
 | **OOP** | Architektura obiektowa (klasy dla Kart, UI, Stanów). |
 | **JSON** | Format zapisu ustawień gracza. |
 
@@ -137,41 +143,78 @@ python main.py
 ---
 
 ## 📂 Struktura Projektu
-Profesjonalny podział kodu na moduły:
+Profesjonalny podział kodu na moduły zgodnie z wzorcem MVC:
 
 ```text
 📦 Blind Bet
- ┣ 📦 assets/image/
- ┃  ┣ 🖼️ cards_sheet.png    # Atlas tekstur kart (5x13 grid, Pixel Art)
- ┃  ┗ 🖼️ logo.png           # Logo gry (Blind Bet)
- ┣ 📦 config/
- ┃  ┗ 📜 consts.py          # Stałe, kolory (Balatro style), dane układów
- ┣ 📦 core/
- ┃  ┣ 📜 card.py            # Klasa Karty (fizyka, animacje)
- ┃  ┗ 📜 game_logic.py      # Logika talii i ewaluacja układów pokerowych
- ┣ 📦 ui/
- ┃  ┣ 📜 background.py      # Shadery GLSL
- ┃  ┣ 📜 menu.py            # Menu Główne
- ┃  ┣ 📜 options.py         # Menu Opcji
- ┃  ┗ 📜 ui.py              # Komponenty UI: ScorePill, Popups, Buttons
- ┣ 📦 utils/
- ┃  ┗ 📜 resources.py       # Ładowanie zasobów
- ┗ 📜 main.py               # Główna pętla, GameManager, Sidebar UI Layout
+┣ 📂 assets/
+┃ ┣ 📂 images/
+┃ ┃ ┣ 🖼️ cards_sheet.png  # Atlas tekstur kart (5x13 grid, Pixel Art)
+┃ ┃ ┗ 🖼️ logo.png         # Logo gry (Blind Bet)
+┃ ┣ 📂 sounds/            # (Przygotowane na przyszłość)
+┃ ┗ 📂 fonts/             # (Przygotowane na przyszłość)
+┣ 📂 config/
+┃ ┣ 📜 init.py
+┃ ┗ 📜 consts.py          # Stałe, kolory (Balatro style), GameSettings
+┣ 📂 core/
+┃ ┣ 📜 init.py
+┃ ┣ 📜 card.py            # Klasa Card (reprezentacja karty)
+┃ ┣ 📜 game_logic.py      # Deck i HandEvaluator (logika pokera)
+┃ ┣ 📜 game_manager.py    # GameManager (mechaniki gry)
+┃ ┗ 📜 game_state.py      # GameState (centralny stan gry)
+┣ 📂 ui/
+┃ ┣ 📜 init.py
+┃ ┣ 📜 background.py      # ShaderBackground (shadery GLSL)
+┃ ┣ 📜 game_ui_manager.py # GameUIManager (UI w trybie gry)
+┃ ┣ 📜 menu.py            # MainMenu (menu główne)
+┃ ┣ 📜 options.py         # OptionsMenu (menu opcji)
+┃ ┣ 📜 overlays.py        # Popupy (HandHierarchyPopup, GameOverOverlay)
+┃ ┗ 📜 ui.py              # Komponenty UI (Button, Slider, Checkbox, ScorePill)
+┣ 📂 utils/
+┃ ┣ 📜 init.py
+┃ ┗ 📜 resources.py       # Ładowanie zasobów (sprite sheet)
+┣ 📂 venv/                # Środowisko wirtualne Python (gitignore)
+┣ 📜 .gitignore
+┣ 📜 main.py              # Główna pętla, inicjalizacja, event handling
+┣ 📜 settings.json        # Plik ustawień (generowany automatycznie)
+┗ 📜 README.md
 ```
+
 
 ### Opis głównych modułów:
 
+#### `config/`
 | Plik | Opis |
 |------|------|
-| `main.py` | Inicjalizacja okna Pyglet, zarządzanie stanami gry (Menu/Gra), główna pętla update/render, obsługa eventów (klawiatura, mysz, resize). |
-| `consts.py` | Wszystkie stałe projektu (kolory UI, stany gry), klasa `GameSettings` z metodami `save()` i `load()` do zarządzania plikiem JSON. |
-| `background.py` | Implementacja shaderów GLSL (vertex + fragment), proceduralna generacja efektu Plasma z interpolacją kolorów między paletami. |
+| `consts.py` | Wszystkie stałe projektu (kolory UI, stany gry, układy pokerowe), klasa `GameSettings` z metodami `save()` i `load()`. |
+
+#### `core/` (Model & Logic)
+| Plik | Opis |
+|------|------|
 | `card.py` | Klasa `Card` z logiką skalowania, pozycjonowania, animacji Lerp i detekcji kliknięć. |
-| `menu.py` | Klasa `MainMenu` z dynamicznym ładowaniem logo (z fixem anchor point) i trzema przyciskami akcji. |
-| `options.py` | Zaawansowana klasa `OptionsMenu` z systemem zakładek, builderem UI dla każdej sekcji, zarządzaniem widocznością elementów. |
-| `ui.py` | Trzy komponenty: `Button` (z efektem hover i cieniem), `Slider` (z drag & drop), `Checkbox` (z wizualną zmianą stanu). |
-| `resources.py` | Ładowanie i cięcie atlasu tekstur (Sprite Sheet), konfiguracja filtrów tekstur (Pixel Art) oraz mapowanie logicznych nazw kart na obiekty graficzne. |
-| `game_logic.py` | Silnik logiczny gry: klasa `Deck` (tasowanie, rozdawanie) oraz `HandEvaluator` (algorytm rozpoznawania układów pokerowych i obliczania punktacji). |
+| `game_logic.py` | `Deck` (tasowanie, rozdawanie) oraz `HandEvaluator` (algorytm rozpoznawania układów pokerowych i punktacji). |
+| `game_state.py` | Klasa `GameState` - centralne zarządzanie stanem gry (punkty, rundy, karty, statystyki). |
+| `game_manager.py` | Klasa `GameManager` - mechaniki gry (dobieranie, zagrywanie, odrzucanie, warunki końca). |
+
+#### `ui/` (View)
+| Plik | Opis |
+|------|------|
+| `background.py` | Implementacja shaderów GLSL (vertex + fragment), proceduralna generacja efektu Plasma. |
+| `menu.py` | Klasa `MainMenu` z dynamicznym ładowaniem logo i trzema przyciskami akcji. |
+| `options.py` | Zaawansowana klasa `OptionsMenu` z systemem zakładek (Gra/Grafika/Dźwięk). |
+| `game_ui_manager.py` | Klasa `GameUIManager` - zarządzanie całym HUD w trybie gry (sidebar, przyciski, score pill). |
+| `overlays.py` | `HandHierarchyPopup` (tabela układów) i `GameOverOverlay` (ekran końca gry). |
+| `ui.py` | Komponenty UI wielokrotnego użytku: `Button`, `Slider`, `Checkbox`, `ScorePill`. |
+
+#### `utils/`
+| Plik | Opis |
+|------|------|
+| `resources.py` | Ładowanie i cięcie atlasu tekstur (Sprite Sheet), konfiguracja filtrów tekstur (Pixel Art). |
+
+#### Główny plik
+| Plik | Opis |
+|------|------|
+| `main.py` | Inicjalizacja okna Pyglet, zarządzanie stanami gry (Menu/Gra/GameOver), główna pętla update/render, obsługa eventów. |
 
 ---
 
@@ -188,7 +231,7 @@ Gra wykorzystuje **OpenGL Shading Language (GLSL 330)** do generowania dynamiczn
 ### Dostępne palety:
 1. **OGIEŃ** - Czerwono-pomarańczowo-żółta.
 2. **MATRIX** - Zielona matrycowa.
-3. **LÓD / CYBERPUNK** - Niebiesko-różowa.
+3. **CYBERPUNK** - Niebiesko-różowa.
 4. **VOID (Pustka)** - Ciemna fioletowa.
 5. **TOKSYCZNY** - Żółto-fioletowa.
 
@@ -207,20 +250,28 @@ Plany rozwoju projektu na najbliższe miesiące:
 - [x] Fix anchor point dla logo (Pixel-Perfect).
 
 ### Faza 2: Logika Pokera (Ukończona ✅)
-- [X] Algorytm sprawdzania układów (Para, Trójka, Strit, Kolor, Full, Kareta, Poker).
-- [X] System punktacji (Chips + Mult).
-- [X] Mechanika odrzucania i dobierania kart.
-- [X] Generowanie talii i losowość (shuffle).
-- [ ] UI wyświetlania znalezionego układu.
+- [x] Algorytm sprawdzania układów (Para, Trójka, Strit, Kolor, Full, Kareta, Poker).
+- [x] System punktacji (Chips + Mult).
+- [x] Mechanika odrzucania i dobierania kart.
+- [x] Generowanie talii i losowość (shuffle).
+- [x] UI wyświetlania znalezionego układu.
 
-### Faza 3: Roguelike Elements (Następny krok 🚧)
+### Faza 3: Refaktoryzacja Architektury (Ukończona ✅ - v0.4.0-alpha)
+- [x] Separacja logiki na pakiety (config, core, ui, utils).
+- [x] Implementacja wzorca MVC (Model-View-Controller).
+- [x] Centralizacja stanu gry (GameState).
+- [x] Wydzielenie managera gry (GameManager).
+- [x] Separacja UI do dedykowanych modułów.
+- [x] Czysty main.py z tylko inicjalizacją i event handlingiem.
+
+### Faza 4: Roguelike Elements (Następny krok 🚧)
 - [ ] Implementacja Jokerów (modyfikatory punktów).
 - [ ] Sklep (kupowanie kart i ulepszeń).
 - [ ] System Blindów (Small Blind, Big Blind, Boss Blinds).
 - [ ] Progresja runów (Ante 1-8).
 - [ ] Unlockable content (nowe talie, jokery).
 
-### Faza 4: Audio & Polish
+### Faza 5: Audio & Polish
 - [ ] Efekty dźwiękowe (SFX) przy klikaniu, punktacji, kupowaniu.
 - [ ] Muzyka w tle (adaptive soundtrack).
 - [ ] System zapisu gry (Save/Load progressu).
@@ -228,7 +279,7 @@ Plany rozwoju projektu na najbliższe miesiące:
 - [ ] Particle effects przy wysokich wynikach.
 - [ ] Screen shake i juice effects.
 
-### Faza 5: Balancing & Content
+### Faza 6: Balancing & Content
 - [ ] Balansowanie ekonomii (ceny, nagrody).
 - [ ] Dodanie więcej Jokerów (50+ unikalnych).
 - [ ] Voucher system (permanent upgrades).
@@ -239,15 +290,37 @@ Plany rozwoju projektu na najbliższe miesiące:
 
 ## 🐛 Znane Problemy i Rozwiązania
 
-### ✅ Naprawione w v0.4.0:
+### ✅ Naprawione w v0.4.0-alpha:
 - **Kolejność układów**: Naprawiono błąd, gdzie Kolor (Flush) był wykrywany jako Para/Wysoka karta.
 - **Centrowanie kart**: Karty są teraz poprawnie centrowane na starcie rundy.
 - **UI Glitches**: Poprawiono cienie przycisków i ramki popupów.
+- **Spaghetti Code**: Kompletna refaktoryzacja - kod podzielony na moduły według wzorca MVC.
+- **Zarządzanie stanem**: Stan gry przeniesiony do dedykowanej klasy GameState.
 
 ### 🔧 Do poprawy:
 - [ ] Brak obsługi kontrolera/gamepad.
 - [ ] Brak lokalizacji (tylko polski).
 - [ ] Menu opcji nie obsługuje przewijania (wszystko musi zmieścić się na ekranie).
+
+---
+
+## 📝 Changelog
+
+### v0.4.0-alpha (Refaktoryzacja Architektury)
+**BREAKING CHANGES:**
+- Pełna refaktoryzacja struktury projektu według wzorca MVC
+- Kod podzielony na pakiety: `config/`, `core/`, `ui/`, `utils/`
+- Wydzielenie `GameState` do zarządzania stanem gry
+- Wydzielenie `GameManager` do obsługi mechanik rozgrywki
+- Wydzielenie `GameUIManager` do obsługi interfejsu gry
+- Wydzielenie overlayów (`HandHierarchyPopup`, `GameOverOverlay`) do oddzielnego modułu
+- Czysty `main.py` z tylko inicjalizacją i event handlingiem
+- Dodanie plików `__init__.py` dla prawidłowej struktury pakietów Python
+
+**Zmiany techniczne:**
+- Separacja odpowiedzialności (Separation of Concerns)
+- Łatwiejsza rozbudowa i testowanie kodu
+- Lepsza czytelność i utrzymywalność projektu
 
 ---
 
