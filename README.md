@@ -9,7 +9,9 @@
   *Brak silnika Unity/Godot. Czysty kod, matematyka i shadery.*
 
   <p>
-    <img src="https://img.shields.io/github/v/tag/MaxPowerPL/Blind-Bet?label=VERSION&style=for-the-badge&color=238636" alt="Wersja" />
+    <a href="https://github.com/MaxPowerPL/Blind-Bet/releases/tag/v0.4.0-alpha">
+      <img src="https://img.shields.io/github/v/tag/MaxPowerPL/Blind-Bet?label=VERSION&style=for-the-badge&color=238636" alt="Wersja" />
+    </a>
     <a href="#">
       <img src="https://img.shields.io/badge/Status-Alpha%20Dev-important?style=for-the-badge" alt="Status" />
     </a>
