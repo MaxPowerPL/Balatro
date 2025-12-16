@@ -9,17 +9,24 @@
   *Brak silnika Unity/Godot. Czysty kod, matematyka i shadery.*
 
   <p>
+    <img src="https://img.shields.io/github/v/tag/MaxPowerPL/Blind-Bet?label=VERSION&style=for-the-badge&color=238636" alt="Wersja" />
+    <a href="#">
+      <img src="https://img.shields.io/badge/Status-Alpha%20Dev-important?style=for-the-badge" alt="Status" />
+    </a>
     <a href="https://www.python.org/">
       <img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version" />
     </a>
     <a href="https://pyglet.org/">
       <img src="https://img.shields.io/badge/Engine-Pyglet%202.0-FF5722?style=for-the-badge&logo=opengl&logoColor=white" alt="Engine" />
     </a>
-    <a href="#">
-      <img src="https://img.shields.io/badge/Status-Alpha%20Dev-important?style=for-the-badge" alt="Status" />
+    <a href="https://github.com/MaxPowerPL/Blind-Bet/stargazers">
+      <img src="https://img.shields.io/github/stars/MaxPowerPL/Blind-Bet?style=for-the-badge&color=yellow" alt="Stars" />
+    </a>
+    <a href="https://github.com/MaxPowerPL/Blind-Bet">
+      <img src="https://img.shields.io/github/last-commit/MaxPowerPL/Blind-Bet?style=for-the-badge" alt="Last Commit" />
     </a>
     <a href="LICENSE">
-      <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge" alt="License" />
+      <img src="https://img.shields.io/badge/License-Proprietary-green?style=for-the-badge" alt="License" />
     </a>
   </p>
 
