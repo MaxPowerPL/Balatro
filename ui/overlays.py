@@ -2,6 +2,7 @@ import pyglet
 from pyglet import shapes
 import config.consts as consts
 from ui.ui import Button
+import utils.resources as resources
 
 class HandHierarchyPopup:
     """Popup z hierarchią układów pokerowych"""
@@ -56,20 +57,38 @@ class HandHierarchyPopup:
             pill_x = x + w - 300 * ui_scale
 
             # Chips
-            chips_rect = shapes.Rectangle(pill_x, row_y - 8*ui_scale, pill_w/2, pill_h, color=consts.COLOR_CHIPS, batch=batch, group=self.group_content)
+            chips_sprite = pyglet.sprite.Sprite(
+                img=resources.pill_chip_img,
+                x=pill_x + (pill_w/4),
+                y=row_y + 4*ui_scale,
+                batch=batch,
+                group=self.group_content
+            )
+            chips_sprite.scale_x = (pill_w/2) / resources.pill_chip_img.width
+            chips_sprite.scale_y = pill_h / resources.pill_chip_img.height
+
             l_chips = pyglet.text.Label(str(c), font_name='Arial', font_size=14*ui_scale, x=pill_x + pill_w/4, y=row_y + 4*ui_scale, anchor_x='center', anchor_y='center', batch=batch, group=self.group_top)
             l_chips.bold = True
 
             # Mult
-            mult_rect = shapes.Rectangle(pill_x + pill_w/2, row_y - 8*ui_scale, pill_w/2, pill_h, color=consts.COLOR_MULT, batch=batch, group=self.group_content)
+            mult_sprite = pyglet.sprite.Sprite(
+                img=resources.pill_mult_img,
+                x=pill_x + (3*pill_w/4),  # Środek prawej połowy
+                y=row_y + 4*ui_scale,
+                batch=batch,
+                group=self.group_content
+            )
+            mult_sprite.scale_x = (pill_w/2) / resources.pill_mult_img.width
+            mult_sprite.scale_y = pill_h / resources.pill_mult_img.height
+
             l_mult = pyglet.text.Label(str(m), font_name='Arial', font_size=14*ui_scale, x=pill_x + 3*pill_w/4, y=row_y + 4*ui_scale, anchor_x='center', anchor_y='center', batch=batch, group=self.group_top)
             l_mult.bold = True
 
             # "X"
-            l_x = pyglet.text.Label("X", font_name='Arial', font_size=10*ui_scale, x=pill_x + pill_w/2, y=row_y+4*ui_scale, anchor_x='center', anchor_y='center', color=(0,0,0,255), batch=batch, group=self.group_top)
+            l_x = pyglet.text.Label("X", font_name='Arial', font_size=10*ui_scale, x=pill_x + pill_w/2, y=row_y+4*ui_scale, anchor_x='center', anchor_y='center', color=consts.UI_LABEL_TEXT, batch=batch, group=self.group_top)
             l_x.bold = True
 
-            self.elements.extend([chips_rect, mult_rect, l_chips, l_mult, l_x])
+            self.elements.extend([chips_sprite, mult_sprite, l_chips, l_mult, l_x])
 
             # Statystyki
             stat_x = x + w - 80 * ui_scale
