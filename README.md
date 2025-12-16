@@ -19,7 +19,7 @@
       <img src="https://img.shields.io/badge/Status-Alpha%20Dev-important?style=for-the-badge" alt="Status" />
     </a>
     <a href="LICENSE">
-      <img src="https://img.shields.io/github/license/MaxPowerPL/blind-bet?style=for-the-badge" alt="License" />
+      <img src="https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge" alt="License" />
     </a>
   </p>
 
@@ -326,7 +326,25 @@ Plany rozwoju projektu na najbliższe miesiące:
 
 ## 📜 Licencja
 
-Ten projekt jest udostępniony na licencji **MIT License**. Zobacz plik [LICENSE](LICENSE) po więcej szczegółów.
+Ten projekt jest udostępniony na **Własnej Licencji Zastrzeżonej (Custom Proprietary License)**.
+
+### Co MOŻESZ robić:
+- ✅ Przeglądać i studiować kod źródłowy w celach edukacyjnych
+- ✅ Pobrać i uruchomić grę do użytku osobistego, niekomercyjnego
+- ✅ Umieścić ten projekt w swoim portfolio lub CV
+- ✅ Rekruterzy mogą przeglądać i testować kod podczas procesów rekrutacyjnych
+
+### Czego NIE MOŻESZ robić bez zgody:
+- ❌ Używać tego kodu komercyjnie lub w płatnych projektach
+- ❌ Publikować lub dystrybuować zmodyfikowane wersje
+- ❌ Umieszczać ten kod w innych publicznych repozytoriach
+- ❌ Używać fragmentów kodu w aplikacjach komercyjnych
+
+### Użytek komercyjny
+Jeśli chcesz użyć tego oprogramowania komercyjnie lub opublikować modyfikacje, skontaktuj się ze mną: **dominik.kielczewski@gmail.com**
+
+Zobacz pełne warunki prawne w pliku [LICENSE](LICENSE).
+
 
 ---
 
@@ -337,6 +355,9 @@ Ten projekt jest udostępniony na licencji **MIT License**. Zobacz plik [LICENSE
 ☕ Stworzono używając Python & Pyglet.
 <br>
 <sub>Ten projekt jest fanowską wersją edukacyjną i nie jest powiązany z LocalThunk ani Playstack.</sub>
+<br>
+<sub>**Licencja Zastrzeżona** - Kod jest widoczny tylko w celach edukacyjnych. Zobacz [LICENSE](LICENSE) po szczegóły.</sub>
+
 
 <p>
   <a href="https://github.com/MaxPowerPL/Blind-Bet/issues/new?template=bug_report.yml">🐛 Zgłoś Bug</a> •
